@@ -43,18 +43,19 @@ app.use((req, res, next) => {
     return next();
   }
 
-  const token = req.headers['authorization'];
-  if (token) {
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-      if (err) {
-        return res.status(401).json({ message: 'Unauthorized' });
-      }
-      req.user = decoded;
-      next();
-    });
-  } else {
-    res.status(401).json({ message: 'No token provided' });
-  }
+  // const token = req.headers['authorization'];
+  // if (token) {
+  //   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+  //     if (err) {
+  //       return res.status(401).json({ message: 'Unauthorized' });
+  //     }
+  //     req.user = decoded;
+  //     next();
+  //   });
+  // } else {
+  //   res.status(401).json({ message: 'No token provided' });
+  // }
+  next();
 });
 
 // Database connection
@@ -100,12 +101,12 @@ router.post('/login', async (req, res) => {
   try {
     const user = await User.findOne({ username });
     if (!user) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     // Generate a token
